@@ -146,7 +146,7 @@ function Home({ cart, setCart }) {
   const navigate = useNavigate();
   useEffect(() => {
     axios({
-      url: "http://amazon--backend.herokuapp.com/carousel",
+      url: "https://amazon--backend.herokuapp.com/carousel",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -158,7 +158,7 @@ function Home({ cart, setCart }) {
       });
 
     axios({
-      url: "http://amazon--backend.herokuapp.com/boxes",
+      url: "https://amazon--backend.herokuapp.com/boxes",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -170,7 +170,7 @@ function Home({ cart, setCart }) {
       });
 
     axios({
-      url: "http://amazon--backend.herokuapp.com/categories",
+      url: "https://amazon--backend.herokuapp.com/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -182,7 +182,7 @@ function Home({ cart, setCart }) {
       });
 
     axios({
-      url: "http://amazon--backend.herokuapp.com/products",
+      url: "https://amazon--backend.herokuapp.com/products",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })

@@ -249,7 +249,7 @@ function Header({ cart, setCart }) {
 
   useEffect(() => {
     axios({
-      url: "http://amazon--backend.herokuapp.com/categories",
+      url: "https://amazon--backend.herokuapp.com/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })

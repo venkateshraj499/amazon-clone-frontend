@@ -220,7 +220,7 @@ function Home(cart, setCart) {
 
   useEffect(() => {
     axios({
-      url: `http://amazon--backend.herokuapp.com/product/${productId}`,
+      url: `https://amazon--backend.herokuapp.com/product/${productId}`,
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -234,7 +234,7 @@ function Home(cart, setCart) {
   useEffect(() => {
     if (product !== null) {
       axios({
-        url: `http://amazon--backend.herokuapp.com/products/${product.category}`,
+        url: `https://amazon--backend.herokuapp.com/products/${product.category}`,
         method: "GET",
         headers: { "Content-Type": "application/json" },
       })

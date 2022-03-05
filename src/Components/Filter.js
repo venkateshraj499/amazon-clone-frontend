@@ -147,7 +147,7 @@ function Filter(cart, setCart) {
   useEffect(() => {
     // Getting all categories available to show filter options
     axios({
-      url: "http://amazon--backend.herokuapp.com/categories",
+      url: "https://amazon--backend.herokuapp.com/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -161,7 +161,7 @@ function Filter(cart, setCart) {
     // To fetch results for filter
     sub
       ? axios({
-          url: `http://amazon--backend.herokuapp.com/products/${category}/${sub}`,
+          url: `https://amazon--backend.herokuapp.com/products/${category}/${sub}`,
           method: "GET",
           headers: { "Content-Type": "application/json" },
         })
@@ -172,7 +172,7 @@ function Filter(cart, setCart) {
             console.log(error);
           })
       : axios({
-          url: `http://amazon--backend.herokuapp.com/products/${category}`,
+          url: `https://amazon--backend.herokuapp.com/products/${category}`,
           method: "GET",
           headers: { "Content-Type": "application/json" },
         })
@@ -186,7 +186,7 @@ function Filter(cart, setCart) {
 
   useEffect(() => {
     axios({
-      url: "http://amazon--backend.herokuapp.com/filter",
+      url: "https://amazon--backend.herokuapp.com/filter",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: filter,
