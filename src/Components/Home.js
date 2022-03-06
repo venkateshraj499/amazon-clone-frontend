@@ -232,6 +232,7 @@ function Home({ cart, setCart }) {
         showIndicators={false}
         className={classes.carouselWrapper}
         showStatus={false}
+        autoPlay
       >
         {carousel.map((item, i) => (
           <div className={classes.carouselItem}>
@@ -284,7 +285,7 @@ function Home({ cart, setCart }) {
             infinite={true}
           >
             {products.map((product, index) => {
-              if (product.category === item.name.toLowerCase()) {
+              if (product.category.toLowerCase() === item.name.toLowerCase()) {
                 console.log(product._id);
                 return (
                   <div onClick={() => handleNavigate(product._id, "product")}>
@@ -303,25 +304,6 @@ function Home({ cart, setCart }) {
                       className={classes.rating}
                     />
                   </div>
-                );
-              } else {
-                return (
-                  <>
-                    <img
-                      src="/dummy.png"
-                      className={classes.productImage}
-                      alt="No-data"
-                    />
-                    <h4 className={classes.productName}>
-                      Item yet to be added <br /> in database
-                    </h4>
-                    <Rating
-                      readOnly
-                      value={3.5}
-                      precision={0.5}
-                      className={classes.rating}
-                    />
-                  </>
                 );
               }
             })}

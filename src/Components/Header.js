@@ -9,6 +9,11 @@ import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
+import { GoogleLogin } from "react-google-login";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     "&:hover": {
-      opacity: "0.7",
+      opacity: "0.5",
     },
   },
   logo: {
@@ -60,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "10px",
     cursor: "pointer",
     "&:hover": {
-      opacity: "0.9",
+      opacity: "0.6",
     },
   },
   locationWrapper2: {
@@ -68,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "10px",
     cursor: "pointer",
     "& :hover": {
-      opacity: "0.9",
+      opacity: "0.6",
     },
   },
   location: {
@@ -123,6 +128,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     flexDirection: "column-reverse",
     marginLeft: "30px",
+    cursor: "pointer",
+    "& :hover": {
+      opacity: "0.6",
+    },
   },
   cartIcon: {
     color: "white",
@@ -234,6 +243,41 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     zIndex: "3",
   },
+  dialog: {
+    "& .MuiDialog-paper": {
+      padding: "20px",
+      width: "fit-content",
+    },
+  },
+  dialogTitle: {
+    textAlign: "center",
+    fontWeight: "600 !important",
+  },
+  addressLine: {
+    width: "70%",
+    margin: "0 auto",
+    minWidth: "500px",
+    height: "38px",
+    border: "1px solid gray",
+    borderRadius: "4px",
+    paddingleft: "15px",
+  },
+  button: {
+    margin: "20px 0 10px 50% ",
+    transform: "translateX(-50%)",
+  },
+  loginButton: {
+    justifyContent: "center",
+    margin: "30px",
+  },
+  userImage: {
+    width: "30px",
+    margin: "0 0 0 50% ",
+    transform: "translateX(-50%)",
+    borderRadius: "50%",
+    opacity: "1.5",
+    filter: "brightness(1.5)",
+  },
 }));
 
 function Header({ cart, setCart }) {
@@ -245,6 +289,9 @@ function Header({ cart, setCart }) {
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [activate, setActivate] = useState(true);
   const [open, setOpen] = useState(false);
+  const [signIn, setSignIn] = useState(false);
+  const [dialog, setDialog] = useState(false);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -293,6 +340,13 @@ function Header({ cart, setCart }) {
     setSelectedCategory(null);
     setSuggestions([]);
   };
+  const responseGoogle = (response) => {
+    setUser(response.profileObj);
+    setSignIn(false);
+  };
+  const responseGoogleFail = (response) => {
+    console.log(response);
+  };
   return (
     <>
       {" "}
@@ -306,8 +360,10 @@ function Header({ cart, setCart }) {
             onClick={() => navigate("/")}
           />
         </div>
-
-        <div className={classes.locationWrapper}>
+        <div
+          className={classes.locationWrapper}
+          onClick={() => setDialog(true)}
+        >
           <div className={classes.location}>
             <LocationOnIcon className={classes.locationIcon} />
             <div>
@@ -317,6 +373,59 @@ function Header({ cart, setCart }) {
           </div>
         </div>
 
+        <Dialog
+          open={dialog}
+          onClose={() => setDialog(false)}
+          className={classes.dialog}
+        >
+          <DialogTitle className={classes.dialogTitle}>
+            Kindly Add Your Delivery Address
+          </DialogTitle>
+          <form className={classes.addressForm}>
+            <p>Enter Your Name *</p>
+            <input
+              placeholder="Eg: John Durairaj"
+              className={classes.addressLine}
+              required
+            />{" "}
+            <br />
+            <p>Address Line 1 *</p>
+            <input
+              placeholder="Eg: Building/Flat No."
+              className={classes.addressLine}
+              required
+            />
+            <br />
+            <p>Address Line 2 *</p>
+            <input
+              placeholder="Eg: Locality Name"
+              className={classes.addressLine}
+              required
+            />
+            <br />
+            <p>Address Line 3 *</p>
+            <input
+              placeholder="Eg: City Name and State Name"
+              className={classes.addressLine}
+              required
+            />
+            <p>Pincode *</p>
+            <input
+              placeholder="Eg: 605345"
+              className={classes.addressLine}
+              required
+            />
+            <br />
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              type="submit"
+            >
+              Submit
+            </Button>
+          </form>
+        </Dialog>
         <div className={classes.inputWrapper}>
           <Select
             defaultValue={"all"}
@@ -362,10 +471,38 @@ function Header({ cart, setCart }) {
 
           <SearchIcon className={classes.SearchIcon} />
         </div>
-        <div className={classes.locationWrapper2}>
-          <div className={classes.line1}>Hello, User</div>
-          <div className={classes.line2}>Sign in</div>
-        </div>
+        {user.name ? (
+          <div className={classes.locationWrapper2}>
+            <img src={user.imageUrl} className={classes.userImage} />
+            <div className={classes.line1}>Hello, {user.name}</div>
+          </div>
+        ) : (
+          <div
+            className={classes.locationWrapper2}
+            onClick={() => setSignIn(true)}
+          >
+            <div className={classes.line1}>Hello, User</div>
+            <div className={classes.line2}>Sign in</div>
+          </div>
+        )}
+
+        <Dialog
+          open={signIn}
+          onClose={() => setSignIn(false)}
+          className={classes.dialog}
+        >
+          <DialogTitle className={classes.dialogTitle}>
+            Login with your Google account
+          </DialogTitle>
+          <GoogleLogin
+            clientId="406381790404-82an2nl2u3ic6onsfprtedv7ldtd3t3r.apps.googleusercontent.com"
+            buttonText="Login"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogleFail}
+            cookiePolicy={"single_host_origin"}
+            className={classes.loginButton}
+          />
+        </Dialog>
         <div className={classes.locationWrapper2}>
           <div className={classes.line1}>Your Orders</div>
           <div className={classes.line2}>{"& returns"}</div>
