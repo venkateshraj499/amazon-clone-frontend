@@ -207,7 +207,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Home(cart, setCart) {
+function Home(cart, setCart, user, setUser) {
   const [product, setProduct] = useState(null);
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
@@ -298,7 +298,12 @@ function Home(cart, setCart) {
 
   return (
     <div className={classes.root}>
-      <Header cart={cart.cart} setCart={cart.setCart} />
+      <Header
+        cart={cart.cart}
+        setCart={cart.setCart}
+        user={user}
+        setUser={setUser}
+      />
       {product && (
         <div className={classes.mainContent}>
           <div className={classes.imageSection}>

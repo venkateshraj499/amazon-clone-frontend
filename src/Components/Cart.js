@@ -112,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Cart({ cart, setCart }) {
+function Cart({ cart, setCart, user, setUser }) {
   const navigate = useNavigate();
 
   const classes = useStyles();
@@ -133,7 +133,7 @@ function Cart({ cart, setCart }) {
   };
   return (
     <div className={classes.root}>
-      <Header cart={cart} setCart={setCart} />
+      <Header cart={cart} setCart={setCart} user={user} setUser={setUser} />
       <div className={classes.container}>
         <div className={classes.cartWrapper}>
           <div className={classes.headingWrapper}>

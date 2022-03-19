@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Filter(cart, setCart) {
+function Filter(cart, setCart, user, setUser) {
   const classes = useStyles();
   const [allCategory, setCategory] = useState([]);
   const [products, setProducts] = useState([]);
@@ -241,7 +241,12 @@ function Filter(cart, setCart) {
 
   return (
     <>
-      <Header cart={cart.cart} setCart={setCart} />
+      <Header
+        cart={cart.cart}
+        setCart={setCart}
+        user={user}
+        setUser={setUser}
+      />
       <div className={classes.root}>
         <div className={classes.filterWrapper}>
           <div className={classes.subWrapper}>

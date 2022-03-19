@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Home({ cart, setCart }) {
+function Home({ cart, setCart, user, setUser }) {
   const [carousel, setCarousel] = useState([]);
   const [boxes, setBoxes] = useState([]);
   const [category, setCategory] = useState([]);
@@ -249,7 +249,7 @@ function Home({ cart, setCart }) {
           />
         </div>
       )}
-      <Header cart={cart} setCart={setCart} />
+      <Header cart={cart} setCart={setCart} user={user} setUser={setUser} />
       <Carousel
         infiniteLoop
         swipeable
@@ -297,7 +297,6 @@ function Home({ cart, setCart }) {
           >
             {products.map((product, index) => {
               if (product.category.toLowerCase() === item.name.toLowerCase()) {
-                console.log(product._id);
                 return (
                   <div onClick={() => handleNavigate(product._id, "product")}>
                     <img

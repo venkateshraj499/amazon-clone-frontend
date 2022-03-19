@@ -294,7 +294,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Header({ cart, setCart }) {
+function Header({ cart, setCart, user, setUser }) {
   const classes = useStyles();
   const [category, setCategory] = useState([]);
   const [over, setOver] = useState(null);
@@ -305,9 +305,7 @@ function Header({ cart, setCart }) {
   const [open, setOpen] = useState(false);
   const [signIn, setSignIn] = useState(false);
   const [dialog, setDialog] = useState(false);
-  const [user, setUser] = useState({});
   const navigate = useNavigate();
-
   useEffect(() => {
     axios({
       url: "https://amazon--backend.herokuapp.com/categories",
@@ -339,7 +337,6 @@ function Header({ cart, setCart }) {
       setActivate(true);
     }
     setSuggestions(searchSub);
-    console.log(suggestions);
   };
   const handleNavigate = (sub, cat) => {
     let subCat = "";
@@ -358,13 +355,11 @@ function Header({ cart, setCart }) {
     setUser(response.profileObj);
     setSignIn(false);
   };
-  const responseGoogleFail = (response) => {
-    console.log(response);
-  };
+  const responseGoogleFail = (response) => {};
+
   return (
     <>
       {" "}
-      {console.log(cart)}
       <div className={classes.root}>
         <div className={classes.logoWrapper}>
           <img
@@ -493,7 +488,9 @@ function Header({ cart, setCart }) {
         ) : (
           <div
             className={classes.locationWrapper2}
-            onClick={() => setSignIn(true)}
+            onClick={() => {
+              setSignIn(true);
+            }}
           >
             <div className={classes.line1}>Hello, User</div>
             <div className={classes.line2}>Sign in</div>
