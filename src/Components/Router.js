@@ -14,7 +14,7 @@ function Router() {
     console.log(size);
     if (size > 0) {
       axios({
-        url: "http://localhost:2022/user",
+        url: "https://amazon--backend.herokuapp.com/user",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         data: user,
