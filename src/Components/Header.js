@@ -140,10 +140,22 @@ const useStyles = makeStyles((theme) => ({
   subWrapper: {
     marginTop: "20px",
     position: "absolute",
-    borderRadius: "0px",
+    borderRadius: "0",
     border: "1px solid black",
     marginLeft: "-100px",
     zIndex: "2",
+    animation: "$up 0.5s",
+    marginTop: "0px",
+  },
+  "@keyframes up": {
+    "0%": {
+      transform: "translateY(30px)",
+      opacity: "0",
+    },
+    "100%": {
+      transform: "translateY(0)",
+      opacity: "1",
+    },
   },
   subCategory: {
     padding: "10px",
@@ -210,6 +222,8 @@ const useStyles = makeStyles((theme) => ({
   },
   sideTrayWrapper: {
     display: "flex",
+    position: "relative",
+    zIndex: "10",
   },
   sideTray: {
     marginTop: "-100px",
@@ -524,25 +538,29 @@ function Header({ cart, setCart }) {
             >
               {item.name}
             </div>
-            <div
-              className={over === i ? classes.subWrapper : classes.hide}
-              onMouseOver={() => {
-                setOver(i);
-              }}
-              onMouseOut={() => {
-                setOver(null);
-              }}
-            >
-              {item.sub.map((each, index) => (
-                <div
-                  key={index}
-                  className={classes.subCategory}
-                  onClick={() => handleNavigate(each, item.name.toLowerCase())}
-                >
-                  {each}
-                </div>
-              ))}
-            </div>
+            {over === i && (
+              <div
+                className={classes.subWrapper}
+                onMouseOver={() => {
+                  setOver(i);
+                }}
+                onMouseOut={() => {
+                  setOver(null);
+                }}
+              >
+                {item.sub.map((each, index) => (
+                  <div
+                    key={index}
+                    className={classes.subCategory}
+                    onClick={() =>
+                      handleNavigate(each, item.name.toLowerCase())
+                    }
+                  >
+                    {each}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>

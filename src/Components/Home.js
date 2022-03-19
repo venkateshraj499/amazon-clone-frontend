@@ -9,6 +9,7 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import Rating from "@material-ui/lab/Rating";
 import Header from "./Header";
+import { ClipLoader } from "react-spinners";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,14 +22,14 @@ const useStyles = makeStyles((theme) => ({
     height: "fit-content",
     minHeight: "450px",
     width: "100%",
-    background:
-      "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)",
     overflowY: "hidden",
+  },
+  carouselImage: {
+    width: "100%",
   },
   carouselItem: {
     display: "flex",
     justifyContent: "center",
-    maxWidth: "1000px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -72,9 +73,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "50px",
   },
   gridContainer: {
-    marginTop: "-150px",
+    marginTop: "-300px",
     display: "flex",
-    zIndex: "3",
+    zIndex: "5",
+    position: "relative",
   },
   gridItemWrapper: {
     margin: "0 auto",
@@ -136,6 +138,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "25%",
     marginTop: "10px",
   },
+  hide: {
+    display: "none",
+  },
 }));
 
 function Home({ cart, setCart }) {
@@ -143,6 +148,8 @@ function Home({ cart, setCart }) {
   const [boxes, setBoxes] = useState([]);
   const [category, setCategory] = useState([]);
   const [products, setProducts] = useState([]);
+  const [load, setLoad] = useState(true);
+
   const navigate = useNavigate();
   useEffect(() => {
     axios({
@@ -188,6 +195,7 @@ function Home({ cart, setCart }) {
     })
       .then((res) => {
         setProducts(res.data.products);
+        setLoad(true);
       })
       .catch((error) => {
         console.log(error);
@@ -222,9 +230,25 @@ function Home({ cart, setCart }) {
       navigate(`/filter?category=${array[data]}`);
     }
   };
+  const carouselImages = [
+    "/carousel1.jpg",
+    "/carousel2.jpg",
+    "/carousel3.jpg",
+    "/carousel4.jpg",
+    "/carousel5.jpg",
+    "/carousel6.jpg",
+  ];
   const array = ["electronics", "furnitures", "outdoors", "education"];
   return (
     <div className={classes.root}>
+      {!load && (
+        <div>
+          <ClipLoader
+            loading={load}
+            className={load ? classes.loader : classes.hide}
+          />
+        </div>
+      )}
       <Header cart={cart} setCart={setCart} />
       <Carousel
         infiniteLoop
@@ -233,24 +257,11 @@ function Home({ cart, setCart }) {
         className={classes.carouselWrapper}
         showStatus={false}
         autoPlay
+        showThumbs={false}
       >
-        {carousel.map((item, i) => (
+        {carouselImages.map((item, i) => (
           <div className={classes.carouselItem}>
-            <div className={classes.content}>
-              <div className={classes.line1}>{item.name}</div>
-              <div className={classes.line2}>{item.content}</div>
-              <div style={{ textAlign: "left" }}>
-                <span className={classes.originalPrice}>
-                  {" "}
-                  Rs: {item.originalPrice}
-                </span>
-                <span className={classes.line2}>Rs: {item.offerPrice}</span>
-              </div>
-              <div className={classes.line3}>Only from {item.duration}</div>
-            </div>
-            <div className={classes.imageWrapper}>
-              <img src={item.image} className={classes.image} alt="no-img" />
-            </div>
+            <img src={item} alt="no-img" className={classes.carouselImage} />
           </div>
         ))}
       </Carousel>
