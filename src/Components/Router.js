@@ -14,19 +14,35 @@ function Router() {
     console.log(size);
     if (size > 0) {
       axios({
-        url: "https://amazon--backend.herokuapp.com/user",
+        url: "http://localhost:2022/user",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         data: user,
       })
         .then((response) => {
-          console.log("user Updated");
+          console.log(response.data, "Router");
+          setCart(response.data.currentUser.cart);
         })
         .catch((error) => {
           console.log(error);
         });
     }
   }, [user]);
+
+  useEffect(() => {
+    axios({
+      url: "http://localhost:2022/cart",
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      data: { cartItems: cart, email: user.email },
+    })
+      .then((response) => {
+        console.log(response.data, "Cart");
+      })
+      .catch((error) => {
+        console.log(error, "cart error");
+      });
+  }, [cart]);
   return (
     <div>
       {console.log(user)}

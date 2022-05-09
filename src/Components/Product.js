@@ -301,9 +301,10 @@ function Home(cart, setCart, user, setUser) {
       <Header
         cart={cart.cart}
         setCart={cart.setCart}
-        user={user}
-        setUser={setUser}
+        user={cart.user}
+        setUser={cart.setUser}
       />
+
       {product && (
         <div className={classes.mainContent}>
           <div className={classes.imageSection}>

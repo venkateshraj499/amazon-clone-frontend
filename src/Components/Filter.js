@@ -238,14 +238,13 @@ function Filter(cart, setCart, user, setUser) {
     }
     console.log(cart.cart);
   };
-
   return (
     <>
       <Header
         cart={cart.cart}
-        setCart={setCart}
-        user={user}
-        setUser={setUser}
+        setCart={cart.setCart}
+        user={cart.user}
+        setUser={cart.setUser}
       />
       <div className={classes.root}>
         <div className={classes.filterWrapper}>
