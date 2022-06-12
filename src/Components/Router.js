@@ -9,9 +9,16 @@ import Cart from "./Cart";
 function Router() {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const local = localStorage.getItem("user");
+    console.log(JSON.parse(local));
+    if (local) {
+      setUser(JSON.parse(local));
+    }
+  }, []);
   useEffect(() => {
     var size = Object.keys(user).length;
-    console.log(size);
     if (size > 0) {
       axios({
         url: "http://localhost:2022/user",
@@ -20,12 +27,9 @@ function Router() {
         data: user,
       })
         .then((response) => {
-          console.log(response.data, "Router");
           setCart(response.data.currentUser.cart);
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((error) => {});
     }
   }, [user]);
 
@@ -34,20 +38,29 @@ function Router() {
       url: "http://localhost:2022/cart",
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      data: { cartItems: cart, email: user.email },
+      data: { cartItems: cart, email: user?.email },
     })
-      .then((response) => {
-        console.log(response.data, "Cart");
-      })
-      .catch((error) => {
-        console.log(error, "cart error");
-      });
+      .then((response) => {})
+      .catch((error) => {});
   }, [cart]);
   return (
     <div>
-      {console.log(user)}
+      {console.log(cart)}
       <BrowserRouter>
         <Routes>
+          <Route
+            exact
+            path="/cart"
+            element={
+              <Cart
+                data-testid="cart"
+                cart={cart}
+                setCart={setCart}
+                user={user}
+                setUser={setUser}
+              />
+            }
+          />
           <Route
             exact
             path="/"
@@ -77,18 +90,6 @@ function Router() {
             path="/filter"
             element={
               <Filter
-                cart={cart}
-                setCart={setCart}
-                user={user}
-                setUser={setUser}
-              />
-            }
-          />
-          <Route
-            exact
-            path="/cart"
-            element={
-              <Cart
                 cart={cart}
                 setCart={setCart}
                 user={user}

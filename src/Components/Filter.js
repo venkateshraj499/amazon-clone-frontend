@@ -142,12 +142,12 @@ function Filter(cart, setCart, user, setUser) {
   const { category, sub } = qs;
   const [filter, setFilter] = useState({ category: category });
   let minCost, maxCost;
-  let items = cart.cart;
+  let items = cart?.cart;
 
   useEffect(() => {
     // Getting all categories available to show filter options
     axios({
-      url: "https://amazon--backend.herokuapp.com/categories",
+      url: "http://localhost:2022/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -155,13 +155,13 @@ function Filter(cart, setCart, user, setUser) {
         setCategory(res.data.categories);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
 
     // To fetch results for filter
     sub
       ? axios({
-          url: `https://amazon--backend.herokuapp.com/products/${category}/${sub}`,
+          url: `http://localhost:2022/products/${category}/${sub}`,
           method: "GET",
           headers: { "Content-Type": "application/json" },
         })
@@ -169,10 +169,10 @@ function Filter(cart, setCart, user, setUser) {
             setProducts(res.data.products);
           })
           .catch((error) => {
-            console.log(error);
+            //(error);
           })
       : axios({
-          url: `https://amazon--backend.herokuapp.com/products/${category}`,
+          url: `http://localhost:2022/products/${category}`,
           method: "GET",
           headers: { "Content-Type": "application/json" },
         })
@@ -180,23 +180,29 @@ function Filter(cart, setCart, user, setUser) {
             setProducts(res.data.products);
           })
           .catch((error) => {
-            console.log(error);
+            //(error);
           });
   }, [category, sub]);
 
   useEffect(() => {
-    axios({
-      url: "https://amazon--backend.herokuapp.com/filter",
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: filter,
-    })
-      .then((res) => {
-        setProducts(res.data.products);
+    if (
+      Object.keys(filter).length === 1 &&
+      Object.keys(filter)[0] === "category"
+    ) {
+    } else {
+      axios({
+        url: "http://localhost:2022/filter",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data: filter,
       })
-      .catch((error) => {
-        console.log(error);
-      });
+        .then((res) => {
+          setProducts(res.data.products);
+        })
+        .catch((error) => {
+          //(error);
+        });
+    }
   }, [filter]);
 
   const rating = [4, 3, 2, 1];
@@ -206,16 +212,17 @@ function Filter(cart, setCart, user, setUser) {
   };
 
   const updateFilter = (key, value, ...rest) => {
-    console.log(rest);
+    console.log(key, value, rest);
+    if (value === "Dictionary ") {
+      value = value.trim();
+    }
     if (key === "lcost") {
-      console.log(key, value);
       setFilter((prev) => ({ ...prev, [key]: value, [rest[0]]: rest[1] }));
     } else if (value === "TV" || key === "rating") {
       setFilter((prev) => ({ ...prev, [key]: value }));
     } else {
       setFilter((prev) => ({ ...prev, [key]: value.toLowerCase() }));
     }
-    console.log(filter);
   };
 
   const updateInput = (event, type) => {
@@ -224,29 +231,29 @@ function Filter(cart, setCart, user, setUser) {
     } else {
       maxCost = parseInt(event.target.value);
     }
-    console.log(minCost, maxCost);
+    //(minCost, maxCost);
   };
 
   const addToCart = (cartItem) => {
     const index = items.indexOf(cartItem);
-    console.log(index);
+    //(index);
     if (items.includes(cartItem)) {
       const filteredCart = items.filter((item) => item !== cartItem);
-      cart.setCart(filteredCart);
+      cart?.setCart(filteredCart);
     } else {
-      cart.setCart((prev) => [...prev, cartItem]);
+      cart?.setCart((prev) => [...prev, cartItem]);
     }
-    console.log(cart.cart);
+    //(cart?.cart);
   };
   return (
     <>
       <Header
-        cart={cart.cart}
-        setCart={cart.setCart}
-        user={cart.user}
-        setUser={cart.setUser}
+        cart={cart?.cart}
+        setCart={cart?.setCart}
+        user={cart?.user}
+        setUser={cart?.setUser}
       />
-      <div className={classes.root}>
+      <div className={classes.root} data-testid="filter">
         <div className={classes.filterWrapper}>
           <div className={classes.subWrapper}>
             {allCategory.map((item, i) => {
@@ -354,7 +361,6 @@ function Filter(cart, setCart, user, setUser) {
                     {" "}
                     {items.includes(item) ? "Remove" : "Add to Cart"}
                   </div>
-                  <div className={classes.button}>Buy now</div>
                 </div>
               </div>
               <div className={classes.line} />

@@ -72,9 +72,26 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "20px",
     borderRadius: "10px",
     cursor: "pointer",
+    position: "relative",
     "& :hover": {
       opacity: "0.6",
     },
+  },
+  orderWrapper: {
+    padding: "50px",
+  },
+  image: {
+    width: "100px",
+    objectFit: "contain",
+    marginRight: "50px",
+  },
+  product: {
+    width: "65%",
+  },
+  cart: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   location: {
     display: "flex",
@@ -158,6 +175,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   subCategory: {
+    fontSize: "14px",
+    color: "black",
     padding: "10px",
     background: "white",
     cursor: "pointer",
@@ -292,6 +311,17 @@ const useStyles = makeStyles((theme) => ({
     opacity: "1.5",
     filter: "brightness(1.5)",
   },
+  statusWrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
+  greenDot: {
+    backgroundColor: "green",
+    width: "10px",
+    marginRight: "10px",
+    height: "10px",
+    borderRadius: "50%",
+  },
 }));
 
 function Header({ cart, setCart, user, setUser }) {
@@ -305,10 +335,23 @@ function Header({ cart, setCart, user, setUser }) {
   const [open, setOpen] = useState(false);
   const [signIn, setSignIn] = useState(false);
   const [dialog, setDialog] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [orderView, setOrderView] = useState(false);
+  const [location, setLocation] = useState(
+    user?.location
+      ? user?.location
+      : {
+          addressline1: "No 24",
+          addressline2: "Chetty st",
+          addressline3: "chennai",
+          pincode: "123",
+        }
+  );
+
   const navigate = useNavigate();
   useEffect(() => {
     axios({
-      url: "https://amazon--backend.herokuapp.com/categories",
+      url: "http://localhost:2022/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -316,9 +359,34 @@ function Header({ cart, setCart, user, setUser }) {
         setCategory(res.data.categories);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
   }, []);
+
+  useEffect(() => {
+    var size = Object.keys(user).length;
+    if (size > 0) {
+      const temp = user;
+      temp[location] = location;
+      console.log(temp);
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+    if (user?.email) {
+      axios({
+        url: "http://localhost:2022/getuser",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data: { email: user?.email },
+      })
+        .then((res) => {
+          setLocation(res?.data?.response?.[0]?.location);
+          setUserDetails(res?.data?.response[0]);
+        })
+        .catch((error) => {
+          //(error);
+        });
+    }
+  }, [user, cart]);
 
   const handleInputChange = (event) => {
     const search = event.target.value;
@@ -351,15 +419,52 @@ function Header({ cart, setCart, user, setUser }) {
     setSelectedCategory(null);
     setSuggestions([]);
   };
+  const handleLocation = (event) => {
+    event.preventDefault();
+    var size = Object.keys(user).length;
+    if (size === 0) {
+      alert("Please Login to update Location");
+    } else {
+      axios({
+        url: "http://localhost:2022/location",
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        data: { location: location, email: user?.email },
+      })
+        .then((response) => {
+          setUser((prev) => ({
+            ...prev,
+            location: location,
+          }));
+        })
+        .catch((error) => {
+          //(error, "location error");
+        });
+    }
+    setDialog(false);
+  };
+  const handleTextChange = (event, key) => {
+    const value = event.target.value;
+    setLocation((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const responseGoogle = (response) => {
     setUser(response.profileObj);
+
     setSignIn(false);
   };
   const responseGoogleFail = (response) => {};
 
+  const emptyLocal = () => {
+    console.log("clicked");
+    localStorage.clear();
+    setUser({});
+  };
   return (
     <>
-      {" "}
       <div className={classes.root}>
         <div className={classes.logoWrapper}>
           <img
@@ -376,8 +481,15 @@ function Header({ cart, setCart, user, setUser }) {
           <div className={classes.location}>
             <LocationOnIcon className={classes.locationIcon} />
             <div>
-              <div className={classes.line1}>Deliver to username</div>
-              <div className={classes.line2}>Location PIN</div>
+              <div className={classes.line1}>
+                {user.location ? user.name : "Deliver to username"}
+              </div>
+              <div className={classes.line2}>
+                {" "}
+                {user.location
+                  ? user.location.addressline3.toUpperCase()
+                  : "Location PIN"}
+              </div>
             </div>
           </div>
         </div>
@@ -390,19 +502,25 @@ function Header({ cart, setCart, user, setUser }) {
           <DialogTitle className={classes.dialogTitle}>
             Kindly Add Your Delivery Address
           </DialogTitle>
-          <form className={classes.addressForm}>
+          <form className={classes.addressForm} onSubmit={handleLocation}>
             <p>Enter Your Name *</p>
+
             <input
               placeholder="Eg: John Durairaj"
               className={classes.addressLine}
               required
-            />{" "}
+              value={user.name ?? ""}
+            />
             <br />
             <p>Address Line 1 *</p>
             <input
               placeholder="Eg: Building/Flat No."
               className={classes.addressLine}
+              value={location?.addressline1}
               required
+              onChange={(e) => {
+                handleTextChange(e, "addressline1");
+              }}
             />
             <br />
             <p>Address Line 2 *</p>
@@ -410,6 +528,10 @@ function Header({ cart, setCart, user, setUser }) {
               placeholder="Eg: Locality Name"
               className={classes.addressLine}
               required
+              value={location?.addressline2}
+              onChange={(e) => {
+                handleTextChange(e, "addressline2");
+              }}
             />
             <br />
             <p>Address Line 3 *</p>
@@ -417,12 +539,20 @@ function Header({ cart, setCart, user, setUser }) {
               placeholder="Eg: City Name and State Name"
               className={classes.addressLine}
               required
+              value={location?.addressline3}
+              onChange={(e) => {
+                handleTextChange(e, "addressline3");
+              }}
             />
             <p>Pincode *</p>
             <input
               placeholder="Eg: 605345"
               className={classes.addressLine}
               required
+              value={location?.pincode}
+              onChange={(e) => {
+                handleTextChange(e, "pincode");
+              }}
             />
             <br />
             <Button
@@ -480,11 +610,24 @@ function Header({ cart, setCart, user, setUser }) {
 
           <SearchIcon className={classes.SearchIcon} />
         </div>
-        {user.name ? (
-          <div className={classes.locationWrapper2}>
-            <img src={user.imageUrl} className={classes.userImage} />
-            <div className={classes.line1}>Hello, {user.name}</div>
-          </div>
+        {user?.name ? (
+          <Tooltip
+            interactive
+            title={
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => emptyLocal()}
+              >
+                LOGOUT
+              </Button>
+            }
+          >
+            <div className={classes.locationWrapper2}>
+              <img src={user?.imageUrl} className={classes.userImage} />
+              <div className={classes.line1}>Hello, {user?.name}</div>
+            </div>
+          </Tooltip>
         ) : (
           <div
             className={classes.locationWrapper2}
@@ -514,37 +657,58 @@ function Header({ cart, setCart, user, setUser }) {
             className={classes.loginButton}
           />
         </Dialog>
-        <div className={classes.locationWrapper2}>
+        <div
+          className={classes.locationWrapper2}
+          onClick={() => setOrderView(true)}
+        >
           <div className={classes.line1}>Your Orders</div>
           <div className={classes.line2}>{"& returns"}</div>
+          {orderView && (
+            <Dialog
+              open={orderView}
+              className={classes.dialog}
+              onClose={() => setOrderView(false)}
+            >
+              {userDetails?.shopped?.map((item) => (
+                <>
+                  {item && (
+                    <div className={classes.cart}>
+                      <img
+                        src={item?.images?.[0]}
+                        alt="no-img"
+                        className={classes.image}
+                      />
+                      <div className={classes.product}>
+                        <h4>{item.name}</h4>
+                        <p>{item.variant}</p>
+                        <div className={classes.statusWrapper}>
+                          <div className={classes.greenDot} />
+                          <p>Active</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <hr />
+                </>
+              ))}
+            </Dialog>
+          )}
         </div>
+
         <div className={classes.cartWrapper} onClick={() => navigate("/cart")}>
-          <div className={classes.line2}>Cart Items : {cart.length}</div>
+          <div className={classes.line2}>Cart Items : {cart?.length}</div>
           <CartIcon className={classes.cartIcon} />
         </div>
       </div>
       <div className={classes.sub}>
         <MenuIcon className={classes.MenuIcon} onClick={() => setOpen(true)} />
         {category.map((item, i) => (
-          <div>
-            <div
-              className={classes.category}
-              onMouseOver={() => {
-                setOver(i);
-              }}
-            >
-              {item.name}
-            </div>
-            {over === i && (
-              <div
-                className={classes.subWrapper}
-                onMouseOver={() => {
-                  setOver(i);
-                }}
-                onMouseOut={() => {
-                  setOver(null);
-                }}
-              >
+          <Tooltip
+            interactive
+            arrow
+            title={
+              <div className={classes.subWrapper}>
                 {item.sub.map((each, index) => (
                   <div
                     key={index}
@@ -557,8 +721,19 @@ function Header({ cart, setCart, user, setUser }) {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            }
+          >
+            <div>
+              <div
+                className={classes.category}
+                onMouseOver={() => {
+                  setOver(i);
+                }}
+              >
+                {item.name}
+              </div>
+            </div>
+          </Tooltip>
         ))}
       </div>
       <div className={classes.sideTrayWrapper}>
@@ -589,7 +764,10 @@ function Header({ cart, setCart, user, setUser }) {
                 <div
                   key={index}
                   className={classes.sideTrayLine2}
-                  onClick={() => handleNavigate(each, item.name)}
+                  onClick={() => {
+                    handleNavigate(each, item.name);
+                    setOpen(false);
+                  }}
                 >
                   {each}
                 </div>

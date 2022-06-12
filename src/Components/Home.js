@@ -153,7 +153,7 @@ function Home({ cart, setCart, user, setUser }) {
   const navigate = useNavigate();
   useEffect(() => {
     axios({
-      url: "https://amazon--backend.herokuapp.com/carousel",
+      url: "http://localhost:2022/carousel",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -161,11 +161,11 @@ function Home({ cart, setCart, user, setUser }) {
         setCarousel(res.data.offers);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
 
     axios({
-      url: "https://amazon--backend.herokuapp.com/boxes",
+      url: "http://localhost:2022/boxes",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -173,11 +173,11 @@ function Home({ cart, setCart, user, setUser }) {
         setBoxes(res.data.offers);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
 
     axios({
-      url: "https://amazon--backend.herokuapp.com/categories",
+      url: "http://localhost:2022/categories",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -185,11 +185,11 @@ function Home({ cart, setCart, user, setUser }) {
         setCategory(res.data.categories);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
 
     axios({
-      url: "https://amazon--backend.herokuapp.com/products",
+      url: "http://localhost:2022/products",
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -198,7 +198,7 @@ function Home({ cart, setCart, user, setUser }) {
         setLoad(true);
       })
       .catch((error) => {
-        console.log(error);
+        //(error);
       });
   }, []);
   const classes = useStyles();
@@ -223,7 +223,7 @@ function Home({ cart, setCart, user, setUser }) {
   };
 
   const handleNavigate = (data, type) => {
-    console.log(data, type);
+    //(data, type);
     if (type === "product") {
       navigate(`/product?id=${data}`);
     } else if (type === "filter") {
@@ -240,7 +240,7 @@ function Home({ cart, setCart, user, setUser }) {
   ];
   const array = ["electronics", "furnitures", "outdoors", "education"];
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-testid="homepage">
       {!load && (
         <div>
           <ClipLoader
@@ -260,7 +260,7 @@ function Home({ cart, setCart, user, setUser }) {
         showThumbs={false}
       >
         {carouselImages.map((item, i) => (
-          <div className={classes.carouselItem}>
+          <div key={i} className={classes.carouselItem}>
             <img src={item} alt="no-img" className={classes.carouselImage} />
           </div>
         ))}
@@ -302,7 +302,7 @@ function Home({ cart, setCart, user, setUser }) {
                     <img
                       src={product.images[0]}
                       className={classes.productImage}
-                      alt="No-data"
+                      alt="Image yet to be added"
                     />
                     <h4 className={classes.productName}>
                       {product.name} <br /> {product.variant}

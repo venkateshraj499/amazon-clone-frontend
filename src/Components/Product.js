@@ -207,7 +207,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Home(cart, setCart, user, setUser) {
+function Home(cart) {
   const [product, setProduct] = useState(null);
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
@@ -215,12 +215,13 @@ function Home(cart, setCart, user, setUser) {
   const navigate = useNavigate();
   const urlParams = useLocation().search;
   const qs = queryString.parse(urlParams);
-  const productId = qs.id;
+  const productId = qs.id ?? null;
   const items = cart.cart;
 
   useEffect(() => {
+    console.log(productId);
     axios({
-      url: `https://amazon--backend.herokuapp.com/product/${productId}`,
+      url: `http://localhost:2022/product/${productId}`,
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -234,7 +235,7 @@ function Home(cart, setCart, user, setUser) {
   useEffect(() => {
     if (product !== null) {
       axios({
-        url: `https://amazon--backend.herokuapp.com/products/${product.category}`,
+        url: `http://localhost:2022/products/${product.category}`,
         method: "GET",
         headers: { "Content-Type": "application/json" },
       })
@@ -251,9 +252,9 @@ function Home(cart, setCart, user, setUser) {
     const originalPrice = parseInt(price);
     const final = originalPrice * 1.1;
     if (type === "mrp") {
-      return final;
+      return final.toFixed(2);
     } else {
-      return final - originalPrice;
+      return final.toFixed(2) - originalPrice;
     }
   };
   const handleNavigate = (data, type) => {
@@ -284,6 +285,7 @@ function Home(cart, setCart, user, setUser) {
   };
 
   const addToCart = (cartItem) => {
+    console.log(items);
     const index = items.indexOf(cartItem);
     console.log(index);
     if (items.includes(cartItem)) {
@@ -294,6 +296,7 @@ function Home(cart, setCart, user, setUser) {
     }
     console.log(cart.cart);
   };
+
   const classes = useStyles();
 
   return (
@@ -369,7 +372,8 @@ function Home(cart, setCart, user, setUser) {
                 </td>
                 <td className={classes.tableRight2}>
                   {" "}
-                  ₹{getPrice(product.originalPrice, "save")} (12% discount)
+                  ₹{getPrice(product.originalPrice, "save").toFixed(2)} (12%
+                  discount)
                 </td>
               </tr>
             </table>
@@ -398,7 +402,6 @@ function Home(cart, setCart, user, setUser) {
               >
                 {items.includes(product) ? "Remove from Cart" : "Add to Cart"}
               </div>
-              <div className={classes.button}>Buy Now</div>
             </div>
 
             <div className={open ? classes.informationWrapper : classes.hide}>
