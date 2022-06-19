@@ -662,7 +662,6 @@ function Header({ cart, setCart, user, setUser }) {
           onClick={() => setOrderView(true)}
         >
           <div className={classes.line1}>Your Orders</div>
-          <div className={classes.line2}>{"& returns"}</div>
           {orderView && (
             <Dialog
               open={orderView}

@@ -7,6 +7,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -145,6 +146,7 @@ const useStyles = makeStyles((theme) => ({
 function Cart({ cart, setCart, user, setUser }) {
   const [dialog, setDialog] = useState(false);
   const [finalCheckout, setFinalCheckout] = useState(false);
+  const navigate = useNavigate();
   console.log(user);
   const [location, setLocation] = useState(
     user?.location
@@ -312,6 +314,13 @@ function Cart({ cart, setCart, user, setUser }) {
     }
     //setDialog(false);
   };
+  const handleNavigate = (data, type) => {
+    //(data, type);
+    if (type === "product") {
+      navigate(`/product?id=${data}`);
+    } else if (type === "filter") {
+    }
+  };
   return (
     <div className={classes.root} data-testid="cart">
       <Header cart={cart} setCart={setCart} user={user} setUser={setUser} />
@@ -438,7 +447,10 @@ function Cart({ cart, setCart, user, setUser }) {
           )}
           {cart?.map((item) => (
             <>
-              <div className={classes.cart}>
+              <div
+                className={classes.cart}
+                onClick={() => handleNavigate(item._id, "product")}
+              >
                 <img
                   src={item.images[0]}
                   alt="no-img"
@@ -459,7 +471,6 @@ function Cart({ cart, setCart, user, setUser }) {
                     {" "}
                     {"Remove"}
                   </div>
-                  <div className={classes.button}>Buy now</div>
                 </div>
               </div>
               <div className={classes.line} />

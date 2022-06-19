@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Button } from "@material-ui/core";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
@@ -59,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: "10px",
+  },
+  clearBtn: {
+    marginTop: "15px",
+    fontSize: "12px",
   },
   input: {
     width: "50px",
@@ -327,6 +331,15 @@ function Filter(cart, setCart, user, setUser) {
               >
                 Go
               </div>
+            </div>
+            <div className={classes.inputWrapper} onClick={() => setFilter({})}>
+              <Button
+                variant="outlined"
+                color="primary"
+                className={classes.clearBtn}
+              >
+                Clear All Filters
+              </Button>
             </div>
           </div>
         </div>
